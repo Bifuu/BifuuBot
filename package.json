@@ -1,0 +1,23 @@
+{
+  "name": "bifuubot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/app.ts",
+  "scripts": {
+    "start": "tsc && node build/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/opus": "^0.1.0",
+    "@types/node": "^13.13.1",
+    "discord.js": "^12.2.0",
+    "ffmpeg-static": "^4.1.1",
+    "ytdl-core-discord": "^1.2.0"
+  },
+  "devDependencies": {
+    "tslint": "^6.1.1",
+    "typescript": "^3.8.3"
+  }
+}
