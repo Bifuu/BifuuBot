@@ -1,6 +1,7 @@
 import { ICommand } from '../interfaces/ICommand';
 import { Message } from 'discord.js';
 import fs from 'fs';
+import { soundsPath } from '../config.json';
 
 const SoundEffect: ICommand = {
   name: 'soundeffect',
@@ -14,7 +15,7 @@ const SoundEffect: ICommand = {
     if (message.member.voice.channel) {
       const connection = await message.member.voice.channel.join();
       const file: string = `${args[0]}.ogg`;
-      const path: string = `S:\\Documents\\Bifuubot\\build\\${file}`;
+      const path: string = `${soundsPath}${file}`;
       if (!fs.existsSync(path)) {
         message.channel.send('That sound dont exists to silly billy');
         return false;
@@ -28,10 +29,10 @@ const SoundEffect: ICommand = {
       }
 
       // Create a dispatcher
-      const dispatcher = connection.play(
-        fs.createReadStream(`S:\\Documents\\Bifuubot\\build\\${file}`),
-        { volume: 0.5 * volumeMult, type: 'ogg/opus' }
-      );
+      const dispatcher = connection.play(fs.createReadStream(`${path}`), {
+        volume: 0.5 * volumeMult,
+        type: 'ogg/opus',
+      });
 
       dispatcher.on('start', () => {
         console.log(`${file} is now playing!`);
