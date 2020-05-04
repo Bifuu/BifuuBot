@@ -17,6 +17,9 @@ commands.set(SoundEffect.name, SoundEffect);
 commands.set(YTAudio.name, YTAudio);
 commands.set(Apex.name, Apex);
 
+// TODO: Probably do this in the command somewhere
+if (!fs.existsSync('/sounds')) fs.mkdirSync('/sounds');
+
 client.once('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });

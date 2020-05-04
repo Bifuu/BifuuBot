@@ -1,7 +1,7 @@
 import { ICommand } from '../interfaces/ICommand';
 import { Message } from 'discord.js';
 import fs from 'fs';
-import { soundsPath } from '../config.json';
+import path from 'path';
 
 const SoundEffect: ICommand = {
   name: 'soundeffect',
@@ -10,16 +10,22 @@ const SoundEffect: ICommand = {
   aliases: ['se'],
   async execute(message: Message, args: string[]): Promise<boolean> {
     // TODO: Dynamically generate list of available files
+    const soundFolder = 'sounds';
+    // const soundsFolderPath = path.join(__dirname, '..', soundFolder);
 
     // Join the same voice channel of the author of the message
     if (message.member.voice.channel) {
-      const connection = await message.member.voice.channel.join();
       const file: string = `${args[0]}.ogg`;
-      const path: string = `${soundsPath}${file}`;
-      if (!fs.existsSync(path)) {
-        message.channel.send('That sound dont exists to silly billy');
+      const soundsPath: string = path.join(__dirname, '..', soundFolder, file);
+      console.log(__dirname);
+
+      if (!fs.existsSync(soundsPath)) {
+        console.log('No sounds at path: ' + soundsPath);
+        // message.channel.send('That sound does not exist: ' + path);
         return false;
       }
+
+      const connection = await message.member.voice.channel.join();
 
       let volumeMult: number = 1;
       if (args.length > 1) {
@@ -29,7 +35,7 @@ const SoundEffect: ICommand = {
       }
 
       // Create a dispatcher
-      const dispatcher = connection.play(fs.createReadStream(`${path}`), {
+      const dispatcher = connection.play(fs.createReadStream(`${soundsPath}`), {
         volume: 0.5 * volumeMult,
         type: 'ogg/opus',
       });
