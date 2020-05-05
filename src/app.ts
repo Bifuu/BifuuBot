@@ -18,7 +18,10 @@ commands.set(YTAudio.name, YTAudio);
 commands.set(Apex.name, Apex);
 
 // TODO: Probably do this in the command somewhere
-if (!fs.existsSync('/sounds')) fs.mkdirSync('/sounds');
+if (!fs.existsSync('/sounds')) {
+  console.log('Need to make a foolder names sounds at: ' + __dirname);
+  fs.mkdirSync('/sounds');
+}
 
 client.once('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
