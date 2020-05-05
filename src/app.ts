@@ -19,8 +19,10 @@ commands.set(YTAudio.name, YTAudio);
 commands.set(Apex.name, Apex);
 
 // TODO: Probably do this in the command somewhere
-if (!fs.existsSync(path.join(__dirname, 'sounds')) {
-  console.log('Need to make a foolder names sounds at: ' + path.join(__dirname, 'sounds'));
+if (!fs.existsSync(path.join(__dirname, 'sounds'))) {
+  console.log(
+    'Need to make a foolder names sounds at: ' + path.join(__dirname, 'sounds')
+  );
   fs.mkdirSync(path.join(__dirname, 'sounds'));
 }
 
