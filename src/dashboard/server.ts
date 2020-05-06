@@ -52,11 +52,7 @@ app.post(`/soundFile`, upload.single('soundFile'), (req, res) => {
       } else console.log(err);
     }
   );
-  res.send(`
-  POST /soundFile
-  ${req.file.originalname} => ${req.file.filename}
-  ${req.body.soundName}
-  `);
+  res.redirect('/');
 });
 
 app.listen(port, () => {
