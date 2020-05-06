@@ -17,11 +17,10 @@ const SoundEffect: ICommand = {
     if (message.member.voice.channel) {
       const file: string = `${args[0]}.ogg`;
       const soundsPath: string = path.join(__dirname, '..', soundFolder, file);
-      console.log(__dirname);
 
       if (!fs.existsSync(soundsPath)) {
         console.log('No sounds at path: ' + soundsPath);
-        // message.channel.send('That sound does not exist: ' + path);
+        message.channel.send('That sound does not exist: ' + args[0]);
         return false;
       }
 
