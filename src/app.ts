@@ -7,6 +7,7 @@ import { ICommand } from './interfaces/ICommand';
 import SoundEffect from './commands/SoundEffect';
 import YTAudio from './commands/YTAudio';
 import Apex from './commands/Apex';
+import Roll from './commands/Roll';
 
 const client = new Discord.Client();
 const prefix = '!';
@@ -17,6 +18,7 @@ commands.set(ping.name, ping);
 commands.set(SoundEffect.name, SoundEffect);
 commands.set(YTAudio.name, YTAudio);
 commands.set(Apex.name, Apex);
+commands.set(Roll.name, Roll);
 
 // TODO: Probably do this in the command somewhere
 if (!fs.existsSync(path.join(__dirname, 'sounds'))) {
