@@ -6,15 +6,24 @@ import path from 'path';
 const SoundEffect: ICommand = {
   name: 'soundeffect',
   description: 'Plays a sound effect in your current voice channel',
-  args: true,
+  args: false,
   aliases: ['se'],
   async execute(message: Message, args: string[]): Promise<boolean> {
     // TODO: Dynamically generate list of available files
     const soundFolder = 'sounds';
+
+    if (!args.length) {
+      fs.readdir(path.resolve('build/sounds'), (err, files) => {
+        const names: string[] = files.map((f) => f.split('.')[0]);
+        message.channel.send(names.join(', '));
+      });
+      message.channel.send(`List of sounds`);
+      return;
+    }
     // const soundsFolderPath = path.join(__dirname, '..', soundFolder);
 
     // Join the same voice channel of the author of the message
-    if (message.member.voice.channel) {
+    if (args.length && message.member.voice.channel) {
       const file: string = `${args[0]}.ogg`;
       const soundsPath: string = path.join(__dirname, '..', soundFolder, file);
 
