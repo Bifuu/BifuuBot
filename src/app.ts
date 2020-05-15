@@ -8,17 +8,27 @@ import SoundEffect from './commands/SoundEffect';
 import YTAudio from './commands/YTAudio';
 import Apex from './commands/Apex';
 import Roll from './commands/Roll';
+import * as twitch from './services/twitch';
 
-const client = new Discord.Client();
+class BifuuBot extends Discord.Client {
+  commands = new Discord.Collection<string, ICommand>();
+  services = [];
+  constructor(options?: Discord.ClientOptions) {
+    super(options);
+  }
+}
+
+const client = new BifuuBot();
 const prefix = '!';
-const commands = new Discord.Collection<string, ICommand>();
+
+twitch.register(client);
 
 // TODO: Dynamically call these based on files in folder?
-commands.set(ping.name.toLowerCase(), ping);
-commands.set(SoundEffect.name.toLowerCase(), SoundEffect);
-commands.set(YTAudio.name.toLowerCase(), YTAudio);
-commands.set(Apex.name.toLowerCase(), Apex);
-commands.set(Roll.name.toLowerCase(), Roll);
+client.commands.set(ping.name.toLowerCase(), ping);
+client.commands.set(SoundEffect.name.toLowerCase(), SoundEffect);
+client.commands.set(YTAudio.name.toLowerCase(), YTAudio);
+client.commands.set(Apex.name.toLowerCase(), Apex);
+client.commands.set(Roll.name.toLowerCase(), Roll);
 
 // TODO: Probably do this in the command somewhere
 if (!fs.existsSync(path.join(__dirname, 'sounds'))) {
@@ -39,8 +49,10 @@ client.on('message', async (message) => {
   const commandName = args.shift().toLowerCase();
 
   const command =
-    commands.get(commandName) ||
-    commands.find((cmd) => cmd.aliases && cmd.aliases.includes(commandName));
+    client.commands.get(commandName) ||
+    client.commands.find(
+      (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
+    );
 
   if (!command) return;
 
