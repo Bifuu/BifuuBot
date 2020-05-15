@@ -24,7 +24,7 @@ const SoundEffect: ICommand = {
 
     // Join the same voice channel of the author of the message
     if (args.length && message.member.voice.channel) {
-      const file: string = `${args[0]}.ogg`;
+      const file: string = `${args[0].toLowerCase()}.ogg`;
       const soundsPath: string = path.join(__dirname, '..', soundFolder, file);
 
       if (!fs.existsSync(soundsPath)) {
