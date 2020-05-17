@@ -1,4 +1,4 @@
-import { Message } from 'discord.js';
+import { Message, Client } from 'discord.js';
 
 export interface ICommand {
   name: string;
@@ -6,5 +6,7 @@ export interface ICommand {
   args?: boolean;
   aliases?: string[];
   usage?: string;
+  client?: Client;
+  service?: any;
   execute(message: Message, args?: string[]): any;
 }
