@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import { token } from './config.json';
+import { token, firebase as serviceAccount } from './config.json';
 import fs from 'fs';
 import path from 'path';
 import ping from './commands/ping';
@@ -9,8 +9,14 @@ import YTAudio from './commands/YTAudio';
 import Apex from './commands/Apex';
 import Roll from './commands/Roll';
 import TwitchAlert from './commands/TwitchAlert';
-import twitch from './services/twitch';
 import TwitchService from './services/twitch';
+import admin, { ServiceAccount } from 'firebase-admin';
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount as ServiceAccount),
+
+  databaseURL: 'https://bifuubot.firebaseio.com',
+});
 
 class BifuuBot extends Discord.Client {
   commands = new Discord.Collection<string, ICommand>();
@@ -19,10 +25,13 @@ class BifuuBot extends Discord.Client {
     super(options);
   }
 }
+const database = admin.database();
 
 const client = new BifuuBot();
 const prefix = '!';
-const twitchService = new TwitchService(client);
+
+// This has to be done a better way right? but it works.
+const twitchService = new TwitchService(client, database);
 const twitchCommand = new TwitchAlert(client, twitchService);
 
 // TODO: Dynamically call these based on files in folder?

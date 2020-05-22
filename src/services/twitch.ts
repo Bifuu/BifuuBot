@@ -8,12 +8,18 @@ import {
   MessageEmbed,
 } from 'discord.js';
 import { twitchClientID as ClientID } from '../config.json';
+import { database } from 'firebase-admin';
+
+enum TWITCH_LIVE_STATUS {
+  online,
+  offline,
+}
 
 interface ITwitchAlertFollow {
   username: string;
   id: string;
   reportChannels: string[];
-  lastStatus: string;
+  lastStatus: TWITCH_LIVE_STATUS;
 }
 
 export default class TwitchService {
@@ -22,10 +28,22 @@ export default class TwitchService {
     'Client-ID': ClientID,
   };
   private client: Client;
+  private db: database.Database;
   private streamersFollowing = new Collection<string, ITwitchAlertFollow>();
 
-  constructor(client: Client) {
+  constructor(client: Client, db: database.Database) {
     this.client = client;
+    this.db = db;
+
+    db.ref(`twitch/`)
+      .once('value')
+      .then((snapshot) => {
+        const streamers: string[] = Object.keys(snapshot.val());
+        streamers.forEach((stream) => {
+          this.streamersFollowing.set(stream, snapshot.val()[stream]);
+        });
+      });
+
     // console.log(`Twitch service`);
     setInterval(this.checkForUpdates, 60000);
   }
@@ -61,15 +79,15 @@ export default class TwitchService {
       const status = await this.checkStreamStatus(streamer.id);
       if (!status) {
         // Stream is offline.
-        if (streamer.lastStatus === 'online') {
+        if (streamer.lastStatus === TWITCH_LIVE_STATUS.online) {
           console.log(streamer.username + 'offline!');
           console.log(status);
-          streamer.lastStatus = 'offline';
+          streamer.lastStatus = TWITCH_LIVE_STATUS.offline;
         }
       } else {
         // Stream is online
-        if (streamer.lastStatus === 'offline') {
-          streamer.lastStatus = 'online';
+        if (streamer.lastStatus === TWITCH_LIVE_STATUS.offline) {
+          streamer.lastStatus = TWITCH_LIVE_STATUS.online;
           streamer.reportChannels.forEach((channelID) => {
             const embed = new MessageEmbed()
               .setAuthor(`${streamer.username} is Live!`)
@@ -106,9 +124,10 @@ export default class TwitchService {
         username: streamer,
         id: streamerID,
         reportChannels: [channel.id],
-        lastStatus: 'offline',
+        lastStatus: TWITCH_LIVE_STATUS.offline,
       };
       this.streamersFollowing.set(streamer, streamerToFollow);
+      this.db.ref(`twitch/` + streamer).set(streamerToFollow);
     } else {
       // Check to see if we are following this streamer in this channel or not.
       if (currentData.reportChannels.includes(channel.id)) {
