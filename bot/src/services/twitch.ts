@@ -38,6 +38,7 @@ export default class TwitchService {
     db.ref(`twitch/`)
       .once('value')
       .then((snapshot) => {
+        if (snapshot.val() === null) return;
         const streamers: string[] = Object.keys(snapshot.val());
         streamers.forEach((stream) => {
           this.streamersFollowing.set(stream, snapshot.val()[stream]);
@@ -113,7 +114,13 @@ export default class TwitchService {
     );
 
     if (!currentData) {
-      const streamerID: string = await this.getUserId(streamer);
+      let streamerID: string;
+      try {
+        streamerID = await this.getUserId(streamer);
+      } catch (e) {
+        console.log(e);
+      }
+
       if (!streamerID) {
         channel.send(`No streamer by the name ${streamer}`);
         return;
