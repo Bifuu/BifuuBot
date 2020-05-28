@@ -1,3 +1,7 @@
 node_modules
 config.json
 build
+firebase.json
+lib/
+ui-debug.log
+.firebaserc
