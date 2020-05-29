@@ -5,8 +5,14 @@ import * as path from 'path';
 import * as os from 'os';
 import ffmpeg, { FfmpegCommand } from 'fluent-ffmpeg';
 import ffmpeg_static from 'ffmpeg-static';
+import serviceAccount from './config.json';
+import admin from 'firebase-admin';
 
 const gcs = new Storage();
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+  databaseURL: `https://${process.env.GCLOUD_PROJECT}.firebaseio.com`,
+});
 
 // Makes an ffmpeg command return a promise.
 function promisifyCommand(command: FfmpegCommand) {
@@ -33,6 +39,7 @@ export const generateOGG = functions.storage
 
     // Get file name
     const fileName = path.basename(filePath);
+    const soundName = fileName.replace(/\.[^/.]+$/, '');
 
     if (fileName.endsWith(`_output.ogg`)) {
       // console.log(`Already converted audio`);
@@ -42,7 +49,7 @@ export const generateOGG = functions.storage
     const bucket = gcs.bucket(fileBucket);
     const tempFilePath = path.join(os.tmpdir(), fileName);
 
-    const targetTempFileName = fileName.replace(/\.[^/.]+$/, '') + '.ogg';
+    const targetTempFileName = soundName + '.ogg';
     const targetTempFilePath = path.join(os.tmpdir(), targetTempFileName);
     const targetStorageFilePath = path.join('sounds', targetTempFileName);
 
@@ -69,6 +76,12 @@ export const generateOGG = functions.storage
     //Clear up temp stuff
     fs.unlinkSync(tempFilePath);
     fs.unlinkSync(targetTempFilePath);
+
+    await admin.database().ref(`sounds/${soundName}`).set({
+      filename: targetTempFileName,
+      path: targetStorageFilePath,
+      volume: 1,
+    });
 
     // console.log(`Temp files removed.`, targetTempFilePath);
     return;
