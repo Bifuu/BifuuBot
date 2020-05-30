@@ -4,8 +4,6 @@ import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import Sounds from './pages/Sounds';
 import Twitch from './pages/Twitch';
 import Home from './pages/Home';
-import logo from './logo.svg';
-import './App.css';
 
 function App() {
   return (

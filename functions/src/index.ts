@@ -77,11 +77,18 @@ export const generateOGG = functions.storage
     fs.unlinkSync(tempFilePath);
     fs.unlinkSync(targetTempFilePath);
 
-    await admin.database().ref(`sounds/${soundName}`).set({
-      filename: targetTempFileName,
-      path: targetStorageFilePath,
+    await admin.firestore().collection(`sounds`).add({
+      name: soundName,
+      fileName: targetTempFileName,
+      storagePath: targetStorageFilePath,
       volume: 1,
     });
+
+    // await admin.database().ref(`sounds/${soundName}`).set({
+    //   filename: targetTempFileName,
+    //   path: targetStorageFilePath,
+    //   volume: 1,
+    // });
 
     // console.log(`Temp files removed.`, targetTempFilePath);
     return;
