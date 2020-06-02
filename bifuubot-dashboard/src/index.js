@@ -2,24 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import 'typeface-roboto';
-import { ThemeProvider, CssBaseline, createMuiTheme } from '@material-ui/core';
 
-const darkTheme = createMuiTheme({
-  palette: {
-    type: 'dark',
-  },
-  typography: {
-    fontFamily: ['Roboto'].join(','),
-  },
-});
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 ReactDOM.render(
   <React.StrictMode>
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
-      <App />
-    </ThemeProvider>
+    <App />
   </React.StrictMode>,
   document.getElementById('root')
 );
