@@ -13,7 +13,6 @@ import TwitchService from './services/twitch';
 import admin, { ServiceAccount } from 'firebase-admin';
 import './services/sounds';
 import SoundService from './services/sounds';
-import { Bucket } from '@google-cloud/storage';
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as ServiceAccount),
