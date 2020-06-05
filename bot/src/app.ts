@@ -49,14 +49,6 @@ client.commands.set(Apex.name.toLowerCase(), Apex);
 client.commands.set(Roll.name.toLowerCase(), Roll);
 client.commands.set(twitchCommand.name.toLowerCase(), twitchCommand);
 
-// TODO: Probably do this in the command somewhere
-if (!fs.existsSync(path.join(__dirname, 'sounds'))) {
-  console.log(
-    'Need to make a foolder names sounds at: ' + path.join(__dirname, 'sounds')
-  );
-  fs.mkdirSync(path.join(__dirname, 'sounds'));
-}
-
 client.once('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });

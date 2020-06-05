@@ -18,16 +18,28 @@ import { ICachedSoundData } from '../interfaces/ICachedSoundData';
 // export default SoundService;
 
 export default class SoundService {
-  cache: Collection<string, ICachedSoundData>;
-  db: firestore.Firestore;
-  fireStorage: storage.Storage;
-  soundsCollection: firestore.CollectionReference<firestore.DocumentData>;
+  private cache: Collection<string, ICachedSoundData>;
+  private db: firestore.Firestore;
+  private fireStorage: storage.Storage;
+  private soundsCollection: firestore.CollectionReference<
+    firestore.DocumentData
+  >;
+  private soundsFolder = path.resolve(__dirname, '..', 'sounds');
 
   constructor(database: firestore.Firestore, fireStorage: storage.Storage) {
     this.cache = new Collection<string, ICachedSoundData>();
     this.db = database;
     this.fireStorage = fireStorage;
     this.soundsCollection = this.db.collection(`sounds`);
+
+    console.log('Sounds folder', this.soundsFolder);
+    // TODO: Probably do this in the command somewhere
+    if (!fs.existsSync(this.soundsFolder)) {
+      console.log(
+        'Need to make a folder named sounds at: ' + this.soundsFolder
+      );
+      fs.mkdirSync(this.soundsFolder);
+    }
 
     this.soundsCollection.onSnapshot(this.onDBCollectionUpdate);
   }
@@ -49,10 +61,7 @@ export default class SoundService {
         if (!cached) {
           this.cache.set(data.name, data);
           // Does the file exist? if not download it
-          const localFilePath = path.join(
-            path.resolve('build/sounds/'),
-            data.fileName
-          );
+          const localFilePath = path.join(this.soundsFolder, data.fileName);
 
           // check if file is on the local machine.
           if (!fs.existsSync(localFilePath)) {
@@ -70,10 +79,7 @@ export default class SoundService {
       if (change.type === 'removed') {
         console.log('removed: ', change.doc.data());
         this.cache.sweep((sound) => sound.id === data.id); // Delete data from cache
-        const localFilePath = path.join(
-          path.resolve('build/sounds/'),
-          data.fileName
-        );
+        const localFilePath = path.join(this.soundsFolder, data.fileName);
         fs.unlinkSync(localFilePath); // Delete file from system
       }
       if (change.type === 'modified') {
@@ -89,10 +95,7 @@ export default class SoundService {
 
   GetSoundPath = (soundName: string) => {
     if (!this.SoundExists(soundName)) return false;
-    return path.join(
-      path.resolve('build/sounds/'),
-      this.cache.get(soundName).fileName
-    );
+    return path.join(this.soundsFolder, this.cache.get(soundName).fileName);
   };
 
   GetAvailableSounds = () => {
