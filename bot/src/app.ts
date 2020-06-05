@@ -11,10 +11,13 @@ import Roll from './commands/Roll';
 import TwitchAlert from './commands/TwitchAlert';
 import TwitchService from './services/twitch';
 import admin, { ServiceAccount } from 'firebase-admin';
+import './services/sounds';
+import SoundService from './services/sounds';
+import { Bucket } from '@google-cloud/storage';
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as ServiceAccount),
-
+  storageBucket: 'bifuubot.appspot.com',
   databaseURL: 'https://bifuubot.firebaseio.com',
 });
 
@@ -25,7 +28,8 @@ class BifuuBot extends Discord.Client {
     super(options);
   }
 }
-const database = admin.database();
+const database = admin.firestore();
+const storage = admin.storage();
 
 const client = new BifuuBot();
 const prefix = '!';
@@ -33,10 +37,14 @@ const prefix = '!';
 // This has to be done a better way right? but it works.
 const twitchService = new TwitchService(client, database);
 const twitchCommand = new TwitchAlert(client, twitchService);
+const soundsService = new SoundService(database, storage);
 
 // TODO: Dynamically call these based on files in folder?
 client.commands.set(ping.name.toLowerCase(), ping);
-client.commands.set(SoundEffect.name.toLowerCase(), SoundEffect);
+client.commands.set(
+  SoundEffect.name.toLowerCase(),
+  new SoundEffect(soundsService)
+);
 client.commands.set(YTAudio.name.toLowerCase(), YTAudio);
 client.commands.set(Apex.name.toLowerCase(), Apex);
 client.commands.set(Roll.name.toLowerCase(), Roll);

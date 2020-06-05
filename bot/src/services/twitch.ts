@@ -8,7 +8,7 @@ import {
   MessageEmbed,
 } from 'discord.js';
 import { twitchClientID as ClientID } from '../config.json';
-import { database } from 'firebase-admin';
+import { firestore } from 'firebase-admin';
 
 enum TWITCH_LIVE_STATUS {
   online,
@@ -28,22 +28,23 @@ export default class TwitchService {
     'Client-ID': ClientID,
   };
   private client: Client;
-  private db: database.Database;
+  private db: firestore.Firestore;
   private streamersFollowing = new Collection<string, ITwitchAlertFollow>();
 
-  constructor(client: Client, db: database.Database) {
+  constructor(client: Client, db: firestore.Firestore) {
     this.client = client;
     this.db = db;
 
-    db.ref(`twitch/`)
-      .once('value')
-      .then((snapshot) => {
-        if (snapshot.val() === null) return;
-        const streamers: string[] = Object.keys(snapshot.val());
-        streamers.forEach((stream) => {
-          this.streamersFollowing.set(stream, snapshot.val()[stream]);
-        });
-      });
+    // TODO: Convert this to Firestore
+    // db.ref(`twitch/`)
+    //   .once('value')
+    //   .then((snapshot) => {
+    //     if (snapshot.val() === null) return;
+    //     const streamers: string[] = Object.keys(snapshot.val());
+    //     streamers.forEach((stream) => {
+    //       this.streamersFollowing.set(stream, snapshot.val()[stream]);
+    //     });
+    //   });
 
     // console.log(`Twitch service`);
     setInterval(this.checkForUpdates, 60000);
@@ -134,7 +135,8 @@ export default class TwitchService {
         lastStatus: TWITCH_LIVE_STATUS.offline,
       };
       this.streamersFollowing.set(streamer, streamerToFollow);
-      this.db.ref(`twitch/` + streamer).set(streamerToFollow);
+      // TODO: Convert To firestore!
+      // this.db.ref(`twitch/` + streamer).set(streamerToFollow);
     } else {
       // Check to see if we are following this streamer in this channel or not.
       if (currentData.reportChannels.includes(channel.id)) {
