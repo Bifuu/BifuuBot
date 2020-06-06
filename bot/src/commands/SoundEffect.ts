@@ -114,7 +114,7 @@ export default class SoundEffect implements ICommand {
         { volume: 0.5 * volumeMultiplier, type: 'ogg/opus' }
       );
 
-      audioDispatcher.on('finish', async () => {
+      audioDispatcher.on('start', async () => {
         await message.delete();
       });
     }
