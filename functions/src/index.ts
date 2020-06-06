@@ -58,6 +58,7 @@ export const generateOGG = functions.storage
 
     const command = ffmpeg(tempFilePath)
       .setFfmpegPath(ffmpeg_static)
+      .noVideo()
       .audioCodec('libopus')
       .audioBitrate('128k')
       .output(targetTempFilePath);
