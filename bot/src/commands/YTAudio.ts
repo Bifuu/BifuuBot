@@ -1,5 +1,5 @@
 import { ICommand } from '../interfaces/ICommand';
-import * as ytdl from 'ytdl-core-discord';
+import ytdl from 'discord-ytdl-core';
 import { Message } from 'discord.js';
 
 const YTAudio: ICommand = {
@@ -17,7 +17,7 @@ const YTAudio: ICommand = {
       if (volumeMult < 0) volumeMult = 0;
     }
 
-    const dispatcher = connection.play(await ytdl.default(args[0]), {
+    const dispatcher = connection.play(await ytdl(args[0]), {
       volume: 0.5 * volumeMult,
       type: 'opus',
     });
