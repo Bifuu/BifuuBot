@@ -32,8 +32,6 @@ export default class SoundService {
     this.fireStorage = fireStorage;
     this.soundsCollection = this.db.collection(`sounds`);
 
-    console.log('Sounds folder', this.soundsFolder);
-    // TODO: Probably do this in the command somewhere
     if (!fs.existsSync(this.soundsFolder)) {
       console.log(
         'Need to make a folder named sounds at: ' + this.soundsFolder
@@ -65,14 +63,14 @@ export default class SoundService {
 
           // check if file is on the local machine.
           if (!fs.existsSync(localFilePath)) {
-            console.log('Attempting to download file');
+            console.log(`Downloading ${data.fileName}`);
 
             await this.fireStorage
               .bucket()
               .file(data.storagePath)
               .download({ destination: localFilePath });
           } else {
-            console.log(`File ${data.fileName} already exists`);
+            // console.log(`File ${data.fileName} already exists`);
           }
         }
       }
