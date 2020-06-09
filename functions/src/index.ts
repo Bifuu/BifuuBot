@@ -7,6 +7,7 @@ import ffmpeg, { FfmpegCommand } from 'fluent-ffmpeg';
 import ffmpeg_static from 'ffmpeg-static';
 import serviceAccount from './config.json';
 import admin from 'firebase-admin';
+import * as discordAuth from './discord_auth';
 
 const gcs = new Storage();
 admin.initializeApp({
@@ -94,3 +95,6 @@ export const generateOGG = functions.storage
     // console.log(`Temp files removed.`, targetTempFilePath);
     return;
   });
+
+// Discord stuff
+export const DiscordAuth = discordAuth;

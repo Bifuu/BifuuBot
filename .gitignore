@@ -5,3 +5,4 @@ firebase.json
 lib/
 ui-debug.log
 .firebaserc
+.firebase
