@@ -1,33 +1,36 @@
 import React, { useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { auth } from '../services/firebase';
+import { auth, functions } from '../services/firebase';
 import queryString from 'query-string';
 import { UserContext } from '../providers/UserProvider';
+import { firebaseConfig } from '../config.json';
 
 const SignIn = (props) => {
   const user = useContext(UserContext);
   const history = useHistory();
-  const { code, state } = queryString.parse(props.location.search);
+
   useEffect(() => {
+    const { code, state } = queryString.parse(props.location.search);
+    const baseUrl =
+      process.env.NODE_ENV !== 'production'
+        ? `http://localhost:5001/${firebaseConfig.projectId}/us-central1/`
+        : `https://us-central1-${firebaseConfig.projectId}.cloudfunctions.net/`;
+
     if (!code) {
-      window.location.href =
-        'https://us-central1-bifuubot.cloudfunctions.net/DiscordAuth-Redirect';
+      window.location.href = `${baseUrl}DiscordAuth-Redirect`;
     } else {
       const options = {
         method: 'GET',
         cors: true, // allow cross-origin HTTP request
         credentials: 'include',
       };
-      fetch(
-        `https://us-central1-bifuubot.cloudfunctions.net/DiscordAuth-Token?code=${code}&state=${state}`,
-        options
-      )
+      fetch(`${baseUrl}DiscordAuth-Token?code=${code}&state=${state}`, options)
         .then((res) => res.json())
         .then((json) =>
           auth.signInWithCustomToken(json.token).then(history.push('/'))
         );
     }
-  }, [props]);
+  }, [props, history]);
 
   return <div>Signing in.....</div>;
 };

@@ -7,10 +7,15 @@ import Oauth from 'discord-oauth2';
 import cookieParser from 'cookie-parser';
 import crypto from 'crypto';
 
+const redirect =
+  process.env.NODE_ENV !== 'production'
+    ? 'http://localhost:3000'
+    : `https://${process.env.GCLOUD_PROJECT}.web.app`;
+
 const oauth = new Oauth({
   clientId: serviceAccount.discord_clientId,
   clientSecret: serviceAccount.discord_client_secret,
-  redirectUri: 'https://bifuubot.web.app/signin', // TODO: Automate/put in variable for testing
+  redirectUri: redirect + '/signin', // TODO: Automate/put in variable for testing
 });
 
 export const Redirect = functions.https.onRequest(async (req, res) => {
@@ -35,12 +40,17 @@ export const Redirect = functions.https.onRequest(async (req, res) => {
 });
 
 export const Token = functions.https.onRequest(async (req, res) => {
-  res.set('Access-Control-Allow-Origin', 'https://bifuubot.web.app'); // TODO: Automate/put origin in variable for testing
+  if (process.env.NODE_ENV === 'production')
+    res.set('Access-Control-Allow-Origin', 'https://bifuubot.web.app');
+  else res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+
   res.set('Access-Control-Allow-Methods', 'GET, PUT, POST, OPTIONS');
   res.set('Access-Control-Allow-Credentials', 'true');
+  console.log(`${req.query.code} <-- code`);
 
   try {
     return cookieParser()(req, res, async () => {
+      console.log(`${req.cookies.state} <--- cookies`);
       if (!req.cookies.state) {
         throw new Error('State cookie not set or expired. Try again');
       } else if (req.cookies.state !== req.query.state) {
