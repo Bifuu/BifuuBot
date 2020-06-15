@@ -5,7 +5,7 @@ import SoundService from '../services/sounds';
 export default class SoundEffect implements ICommand {
   name: string = 'SoundEffect';
   description: string = 'Plays a soundeffect';
-  aliases?: string[] = ['se'];
+  aliases?: string[] = ['se', 'play', 'yta'];
   soundService: SoundService;
 
   constructor(soundService: SoundService) {
