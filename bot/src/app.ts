@@ -5,6 +5,7 @@ import path from 'path';
 import ping from './commands/ping';
 import { ICommand } from './interfaces/ICommand';
 import SoundEffect from './commands/SoundEffect';
+import Stop from './commands/Stop';
 import Apex from './commands/Apex';
 import Roll from './commands/Roll';
 import TwitchAlert from './commands/TwitchAlert';
@@ -43,9 +44,10 @@ client.commands.set(
   SoundEffect.name.toLowerCase(),
   new SoundEffect(soundsService)
 );
+client.commands.set(Stop.name.toLowerCase(), new Stop(soundsService));
 client.commands.set(Apex.name.toLowerCase(), Apex);
 client.commands.set(Roll.name.toLowerCase(), Roll);
-client.commands.set(twitchCommand.name.toLowerCase(), twitchCommand);
+// client.commands.set(twitchCommand.name.toLowerCase(), twitchCommand);
 
 client.once('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
