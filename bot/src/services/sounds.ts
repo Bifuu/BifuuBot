@@ -2,8 +2,10 @@ import path from 'path';
 import fs from 'fs';
 import { firestore, storage } from 'firebase-admin';
 import { ISoundData } from '../interfaces/ISoundData';
-import { Collection } from 'discord.js';
+import { Collection, Message, StreamDispatcher } from 'discord.js';
 import { ICachedSoundData } from '../interfaces/ICachedSoundData';
+import { Readable } from 'stream';
+import DiscordYTDLCore from 'discord-ytdl-core';
 
 // const SoundService = (db: firestore.Firestore) => {
 //   const soundsCollection = db.collection('sounds');
@@ -25,6 +27,7 @@ export default class SoundService {
     firestore.DocumentData
   >;
   private soundsFolder = path.resolve(__dirname, '..', 'sounds');
+  private audioDispatcher: StreamDispatcher;
 
   constructor(database: firestore.Firestore, fireStorage: storage.Storage) {
     this.cache = new Collection<string, ICachedSoundData>();
@@ -102,5 +105,53 @@ export default class SoundService {
 
   SoundExists = (soundName: string) => {
     return this.cache.has(soundName);
+  };
+
+  PlaySound = async (soundName: string, message: Message, volume?: number) => {
+    const ytRegex: RegExp = /(?:https?:\/\/)?(?:www\.)?youtu\.?be(?:\.com)?\/?.*(?:watch|embed)?(?:.*v=|v\/|\/)(?<id>[\w-_]+)(?<time>(?:\?|&)t=\d+)?/;
+    const isYTUrl = ytRegex.exec(soundName);
+
+    console.log(isYTUrl);
+
+    if (!message.member.voice.channel)
+      return message.channel.send(`You must be in a voice channel!`);
+    if (!message.member.voice.channel.joinable)
+      return message.channel.send(`I cannot join your current voice channel`);
+
+    let audioStream;
+    let type;
+
+    if (isYTUrl) {
+      let seek = 0;
+      if (typeof isYTUrl.groups.time !== 'undefined')
+        seek = parseInt(isYTUrl.groups.time.split('=')[1], 10);
+
+      audioStream = await DiscordYTDLCore(soundName, {
+        seek,
+      });
+
+      type = 'opus';
+    } else {
+      const soundPath = this.GetSoundPath(soundName);
+      if (!soundPath)
+        return message.channel.send(`The sound '${soundName}' does not exist.`);
+      audioStream = fs.createReadStream(`${soundPath}`);
+      type = 'ogg/opus';
+    }
+
+    const voiceConnection = await message.member.voice.channel.join();
+
+    this.audioDispatcher = voiceConnection.play(audioStream, {
+      volume: 0.5 * volume,
+      type,
+    });
+
+    this.audioDispatcher.on('start', async () => {
+      await message.delete();
+    });
+  };
+
+  StopSound = () => {
+    if (this.audioDispatcher) this.audioDispatcher.end();
   };
 }

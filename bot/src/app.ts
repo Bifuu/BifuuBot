@@ -5,7 +5,6 @@ import path from 'path';
 import ping from './commands/ping';
 import { ICommand } from './interfaces/ICommand';
 import SoundEffect from './commands/SoundEffect';
-import YTAudio from './commands/YTAudio';
 import Apex from './commands/Apex';
 import Roll from './commands/Roll';
 import TwitchAlert from './commands/TwitchAlert';
@@ -44,7 +43,6 @@ client.commands.set(
   SoundEffect.name.toLowerCase(),
   new SoundEffect(soundsService)
 );
-client.commands.set(YTAudio.name.toLowerCase(), YTAudio);
 client.commands.set(Apex.name.toLowerCase(), Apex);
 client.commands.set(Roll.name.toLowerCase(), Roll);
 client.commands.set(twitchCommand.name.toLowerCase(), twitchCommand);
