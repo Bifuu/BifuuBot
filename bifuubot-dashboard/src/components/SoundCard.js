@@ -6,6 +6,7 @@ import { storage, db } from '../services/firebase';
 
 const SoundCard = (props) => {
   const [audio, setAudio] = useState(new Audio());
+  const [playing, setPlaying] = useState(false);
   const [edit, setEdit] = useState(false);
 
   const editNameField = React.createRef();
@@ -39,34 +40,42 @@ const SoundCard = (props) => {
   }, [props.data]);
 
   return (
-    <Card>
-      <div>
-        {edit ? editField() : props.data.name}
+    <tr>
+      <td>
         <button
           onClick={() => {
-            audio.play();
+            if (playing) {
+              audio.pause();
+              setPlaying(false);
+            } else {
+              audio.play();
+              setPlaying(true);
+            }
           }}
         >
-          Play
+          {playing ? 'Pause' : 'Play'}
         </button>
-      </div>
-      <button
-        onClick={() => {
-          setEdit(!edit);
-        }}
-      >
-        edit
-      </button>
-      <button
-        onClick={() => {
-          db.collection('sounds').doc(props.id).delete();
-          storage.ref(props.data.storagePath).delete();
-        }}
-      >
-        Delete
-      </button>
+        {edit ? editField() : props.data.name}
+      </td>
+      <td>
+        <button
+          onClick={() => {
+            setEdit(!edit);
+          }}
+        >
+          Edit
+        </button>
+        <button
+          onClick={() => {
+            db.collection('sounds').doc(props.id).delete();
+            storage.ref(props.data.storagePath).delete();
+          }}
+        >
+          Delete
+        </button>
+      </td>
       <hr />
-    </Card>
+    </tr>
   );
 };
 

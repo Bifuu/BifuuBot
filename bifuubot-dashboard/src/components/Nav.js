@@ -3,6 +3,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { auth, functions } from '../services/firebase';
 import { UserContext } from '../providers/UserProvider';
 import Navbar from 'react-bootstrap/Navbar';
+import { LinkContainer } from 'react-router-bootstrap';
 
 const Nav = () => {
   const user = useContext(UserContext);
@@ -26,7 +27,9 @@ const Nav = () => {
   };
   return (
     <Navbar>
-      <Navbar.Brand href="/home">Bifuu Bot</Navbar.Brand>
+      <LinkContainer to="/">
+        <Navbar.Brand>Bifuu Bot</Navbar.Brand>
+      </LinkContainer>
       <Navbar.Collapse className="justify-content-end">
         {signInOrOut()}
       </Navbar.Collapse>
