@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { auth, functions } from '../services/firebase';
 import { UserContext } from '../providers/UserProvider';
+import Navbar from 'react-bootstrap/Navbar';
 
 const Nav = () => {
   const user = useContext(UserContext);
@@ -10,31 +11,26 @@ const Nav = () => {
     if (typeof user !== 'undefined') {
       return (
         <>
-          <li>
-            <RouterLink to="/sounds">Sounds</RouterLink>
-          </li>
-          <li>
+          <Navbar.Text>
             <button onClick={() => auth.signOut()}>Sign Out</button>
-          </li>
+          </Navbar.Text>
         </>
       );
     } else {
       return (
-        <li>
+        <Navbar.Text>
           <RouterLink to="/signin">Sign in</RouterLink>
-        </li>
+        </Navbar.Text>
       );
     }
   };
   return (
-    <div className="nav">
-      <ul>
-        <li>
-          <RouterLink to="/">Home</RouterLink>
-        </li>
+    <Navbar>
+      <Navbar.Brand href="/home">Bifuu Bot</Navbar.Brand>
+      <Navbar.Collapse className="justify-content-end">
         {signInOrOut()}
-      </ul>
-    </div>
+      </Navbar.Collapse>
+    </Navbar>
   );
 };
 

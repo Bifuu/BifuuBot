@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 import Sounds from './pages/Sounds';
 import Twitch from './pages/Twitch';
@@ -9,15 +11,20 @@ import SignIn from './pages/SignIn';
 import { UserProvider } from './providers/UserProvider';
 
 import Nav from './components/Nav';
+import Sidebar from './components/Sidebar';
 
 function App() {
   return (
     <UserProvider>
       <Router>
-        <Container>
-          <div className="App">
-            <Nav />
-            <main>
+        <Container fluid>
+          <Nav />
+
+          <Row>
+            <Col xs={1}>
+              <Sidebar />
+            </Col>
+            <Col>
               <Switch>
                 <Route path="/sounds">
                   <Sounds />
@@ -31,8 +38,8 @@ function App() {
                   <Home />
                 </Route>
               </Switch>
-            </main>
-          </div>
+            </Col>
+          </Row>
         </Container>
       </Router>
     </UserProvider>
