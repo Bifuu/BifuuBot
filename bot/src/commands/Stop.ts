@@ -13,6 +13,6 @@ export default class Stop implements ICommand {
   }
 
   async execute(message: Message, args?: string[]) {
-    this.soundService.StopSound();
+    this.soundService.StopSound(message.guild.id);
   }
 }

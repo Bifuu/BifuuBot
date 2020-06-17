@@ -1,23 +1,9 @@
 import path from 'path';
 import fs from 'fs';
 import { firestore, storage } from 'firebase-admin';
-import { ISoundData } from '../interfaces/ISoundData';
 import { Collection, Message, StreamDispatcher } from 'discord.js';
 import { ICachedSoundData } from '../interfaces/ICachedSoundData';
-import { Readable } from 'stream';
 import DiscordYTDLCore from 'discord-ytdl-core';
-
-// const SoundService = (db: firestore.Firestore) => {
-//   const soundsCollection = db.collection('sounds');
-
-//   const onCollectionUpdate = snapshot => {
-
-//   }
-
-//   soundsCollection.onSnapshot(onCollectionUpdate);
-// };
-
-// export default SoundService;
 
 export default class SoundService {
   private cache: Collection<string, ICachedSoundData>;
@@ -27,13 +13,14 @@ export default class SoundService {
     firestore.DocumentData
   >;
   private soundsFolder = path.resolve(__dirname, '..', 'sounds');
-  private audioDispatcher: StreamDispatcher;
+  private dispatchers: Collection<string, StreamDispatcher>;
 
   constructor(database: firestore.Firestore, fireStorage: storage.Storage) {
     this.cache = new Collection<string, ICachedSoundData>();
     this.db = database;
     this.fireStorage = fireStorage;
     this.soundsCollection = this.db.collection(`sounds`);
+    this.dispatchers = new Collection<string, StreamDispatcher>();
 
     if (!fs.existsSync(this.soundsFolder)) {
       console.log(
@@ -141,17 +128,19 @@ export default class SoundService {
 
     const voiceConnection = await message.member.voice.channel.join();
 
-    this.audioDispatcher = voiceConnection.play(audioStream, {
+    const dispatcher = voiceConnection.play(audioStream, {
       volume: 0.5 * volume,
       type,
     });
 
-    this.audioDispatcher.on('start', async () => {
+    dispatcher.on('start', async () => {
       await message.delete();
     });
+
+    this.dispatchers.set(message.guild.id, dispatcher);
   };
 
-  StopSound = () => {
-    if (this.audioDispatcher) this.audioDispatcher.end();
+  StopSound = (guildId) => {
+    if (this.dispatchers.has(guildId)) this.dispatchers.get(guildId).end();
   };
 }
