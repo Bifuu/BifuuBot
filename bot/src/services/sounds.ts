@@ -98,8 +98,6 @@ export default class SoundService {
     const ytRegex: RegExp = /(?:https?:\/\/)?(?:www\.)?youtu\.?be(?:\.com)?\/?.*(?:watch|embed)?(?:.*v=|v\/|\/)(?<id>[\w-_]+)(?<time>(?:\?|&)t=\d+)?/;
     const isYTUrl = ytRegex.exec(soundName);
 
-    console.log(isYTUrl);
-
     if (!message.member.voice.channel)
       return message.channel.send(`You must be in a voice channel!`);
     if (!message.member.voice.channel.joinable)
