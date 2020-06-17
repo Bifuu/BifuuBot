@@ -3,6 +3,10 @@ import { upload } from '../helpers/storage';
 import { db } from '../services/firebase';
 
 import Table from 'react-bootstrap/Table';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import Col from 'react-bootstrap/Col';
+import bsCustomFileInput from 'bs-custom-file-input';
 import SoundCard from '../components/SoundCard';
 
 const Sounds = () => {
@@ -14,6 +18,7 @@ const Sounds = () => {
     db.collection('sounds').onSnapshot((snapshot) => {
       setSounds(snapshot);
     });
+    bsCustomFileInput.init();
   }, []);
 
   const handleSubmit = async (event) => {
@@ -39,20 +44,23 @@ const Sounds = () => {
 
   return (
     <div>
-      <hr />
       <div>
-        <form onSubmit={handleSubmit}>
-          <label>
-            Sound Name:
-            <input type="text" ref={soundName} required />
-          </label>
-          <br />
-          <label>
-            Sound File:
-            <input type="file" name="soundFile" id="" ref={fileInput} />
-          </label>
-          <button type="submit">Upload</button>
-        </form>
+        <Form onSubmit={handleSubmit} inline>
+          <Form.Row>
+            <Col xs="auto">
+              <Form.Control placeholder="soundname" ref={soundName} required />
+            </Col>
+            <Col>
+              <Form.File custom required>
+                <Form.File.Input name="soundFile" ref={fileInput} />
+                <Form.File.Label>Sound Name</Form.File.Label>
+              </Form.File>
+            </Col>
+            <Col xs="auto">
+              <Button type="submit">Upload</Button>
+            </Col>
+          </Form.Row>
+        </Form>
       </div>
       <hr />
       <Table striped bordered hover>
