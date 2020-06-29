@@ -1,18 +1,28 @@
 import React from 'react';
 import Nav from 'react-bootstrap/Nav';
+import styled from 'styled-components';
 import { LinkContainer } from 'react-router-bootstrap';
+
+const Sidebarstyled = styled(Nav)`
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
+  height: 100%;
+`;
+
+const Sidebaritem = styled(Nav.Link)`
+  flex-grow: 1;
+`;
 
 const Sidebar = () => {
   return (
-    <Nav className="flex-column">
+    <Sidebarstyled className="d-flex align-content-start">
       <LinkContainer to="/sounds">
-        <Nav.Link>Sounds</Nav.Link>
+        <Sidebaritem>Sounds</Sidebaritem>
       </LinkContainer>
 
-      <Nav.Link href="/">Twitch Alerts</Nav.Link>
-      <Nav.Link href="/">Twitter Alerts</Nav.Link>
-      <Nav.Link href="/">TBA</Nav.Link>
-    </Nav>
+      <Sidebaritem href="/">Twitch Alerts</Sidebaritem>
+      <Sidebaritem href="/">Twitter Alerts</Sidebaritem>
+      <Sidebaritem href="/">TBA</Sidebaritem>
+    </Sidebarstyled>
   );
 };
 

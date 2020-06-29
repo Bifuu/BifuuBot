@@ -11,6 +11,7 @@ import SoundCard from '../components/SoundCard';
 
 const Sounds = () => {
   const [sounds, setSounds] = useState([]);
+  const [uploading, setUploading] = useState(null);
   const fileInput = React.createRef();
   const soundName = React.createRef();
 
@@ -21,15 +22,60 @@ const Sounds = () => {
     bsCustomFileInput.init();
   }, []);
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     console.log(event);
     const file = fileInput.current.files[0];
     const name = soundName.current.value;
     event.currentTarget.reset();
+    const uploadTask = upload(file, name);
+    uploadTask.on(
+      'state_changed',
+      (snapshot) => {
+        // State changes
+        let progress = snapshot.bytesTransferred / snapshot.totalBytes;
+        setUploading(progress);
+      },
+      (error) => {
+        // Error happens
+        setUploading(null);
+      },
+      () => {
+        // Upload Completes
+        setUploading(null);
+      }
+    );
+  };
 
-    const uploadTask = await upload(file, name);
-    //console.log(uploadTask);
+  const showFormOrProgress = () => {
+    if (uploading) {
+      return <div>{`Uploading: ${uploading * 100}%`}</div>;
+    } else {
+      return (
+        <div>
+          <Form onSubmit={handleSubmit} inline>
+            <Form.Row>
+              <Col xs="auto">
+                <Form.Control
+                  placeholder="soundname"
+                  ref={soundName}
+                  required
+                />
+              </Col>
+              <Col>
+                <Form.File custom required>
+                  <Form.File.Input name="soundFile" ref={fileInput} />
+                  <Form.File.Label>Sound Name</Form.File.Label>
+                </Form.File>
+              </Col>
+              <Col xs="auto">
+                <Button type="submit">Upload</Button>
+              </Col>
+            </Form.Row>
+          </Form>
+        </div>
+      );
+    }
   };
 
   const renderListOfSounds = () => {
@@ -44,24 +90,7 @@ const Sounds = () => {
 
   return (
     <div>
-      <div>
-        <Form onSubmit={handleSubmit} inline>
-          <Form.Row>
-            <Col xs="auto">
-              <Form.Control placeholder="soundname" ref={soundName} required />
-            </Col>
-            <Col>
-              <Form.File custom required>
-                <Form.File.Input name="soundFile" ref={fileInput} />
-                <Form.File.Label>Sound Name</Form.File.Label>
-              </Form.File>
-            </Col>
-            <Col xs="auto">
-              <Button type="submit">Upload</Button>
-            </Col>
-          </Form.Row>
-        </Form>
-      </div>
+      {showFormOrProgress()}
       <hr />
       <Table striped bordered hover>
         <thead>

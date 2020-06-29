@@ -1,6 +1,6 @@
 import { storage } from '../services/firebase';
 
-export const upload = async (file, soundName) => {
+export const upload = (file, soundName) => {
   console.log('Upload');
   let storageRef = storage.ref();
   console.log(`ref:`, storageRef);
@@ -9,7 +9,7 @@ export const upload = async (file, soundName) => {
     contentType: 'audio/mpeg',
   };
 
-  let uploadTask = await storageRef
+  let uploadTask = storageRef
     .child(`tempSounds/${soundName}`)
     .put(file, metadata);
 

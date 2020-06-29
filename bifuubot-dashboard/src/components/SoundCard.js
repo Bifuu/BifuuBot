@@ -74,7 +74,6 @@ const SoundCard = (props) => {
           Delete
         </button>
       </td>
-      <hr />
     </tr>
   );
 };

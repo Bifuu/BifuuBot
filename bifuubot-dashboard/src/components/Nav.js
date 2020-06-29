@@ -13,7 +13,7 @@ const Nav = () => {
       return (
         <>
           <Navbar.Text>
-            <button onClick={() => auth.signOut()}>Sign Out</button>
+            <a onClick={() => auth.signOut()}>Sign Out</a>
           </Navbar.Text>
         </>
       );
@@ -26,7 +26,7 @@ const Nav = () => {
     }
   };
   return (
-    <Navbar>
+    <Navbar className="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
       <LinkContainer to="/">
         <Navbar.Brand>Bifuu Bot</Navbar.Brand>
       </LinkContainer>
