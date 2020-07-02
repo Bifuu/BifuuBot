@@ -133,6 +133,12 @@ export default class SoundService {
 
     dispatcher.on('start', async () => {
       await message.delete();
+      console.log(`${soundName} has started playing.`);
+    });
+
+    dispatcher.on('finish', () => {
+      console.log(`${soundName} has finished playing.`);
+      dispatcher.end();
     });
 
     this.dispatchers.set(message.guild.id, dispatcher);
