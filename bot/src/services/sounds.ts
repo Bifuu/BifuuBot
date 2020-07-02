@@ -47,7 +47,7 @@ export default class SoundService {
       const cached = this.cache.get(data.name);
       if (change.type === 'added') {
         if (!cached) {
-          this.cache.set(data.name, data);
+          this.cache.set(data.name.toLowerCase(), data);
           // Does the file exist? if not download it
           const localFilePath = path.join(this.soundsFolder, data.fileName);
 
@@ -76,7 +76,7 @@ export default class SoundService {
           // Name changed, we need to delete the old entry and make a new one!
           this.cache.sweep((sound) => sound.id === data.id); // Delete old data
         }
-        this.cache.set(data.name, data);
+        this.cache.set(data.name.toLowerCase(), data);
       }
     });
   };
@@ -117,7 +117,7 @@ export default class SoundService {
 
       type = 'opus';
     } else {
-      const soundPath = this.GetSoundPath(soundName);
+      const soundPath = this.GetSoundPath(soundName.toLowerCase());
       if (!soundPath)
         return message.channel.send(`The sound '${soundName}' does not exist.`);
       audioStream = fs.createReadStream(`${soundPath}`);
