@@ -77,7 +77,7 @@ export const generateOGG = functions.storage
     await admin.firestore().collection(`sounds`).doc(soundID).update({
       fileName: targetFileName,
       storagePath: targetStorageFilePath,
-      uploadDate: Date.now(),
+      uploadDate: admin.firestore.Timestamp.now(),
     });
 
     // await admin.firestore().collection(`sounds`).add({
