@@ -58,7 +58,7 @@ const SoundCard = (props) => {
         </button>
         {edit ? editField() : props.data.name}
       </td>
-      <td>{props.data.uploadDate.toDate().toDateString()}</td>
+      <td>{props.data.uploadDate?.toDate().toDateString()}</td>
       <td>{props.data.uploadedBy}</td>
       <td>
         <button
