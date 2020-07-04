@@ -32,6 +32,23 @@ export default class SoundService {
     this.soundsCollection.onSnapshot(this.onDBCollectionUpdate);
   }
 
+  private async downloadSound(soundData: ICachedSoundData) {
+    // Does the file exist? if not download it
+    const localFilePath = path.join(this.soundsFolder, soundData.fileName);
+
+    // check if file is on the local machine.
+    if (!fs.existsSync(localFilePath)) {
+      console.log(`Downloading ${soundData.fileName}`);
+
+      await this.fireStorage
+        .bucket()
+        .file(soundData.storagePath)
+        .download({ destination: localFilePath });
+    } else {
+      // console.log(`File ${data.fileName} already exists`);
+    }
+  }
+
   private onDBCollectionUpdate = (
     snapshot: firestore.QuerySnapshot<firestore.DocumentData>
   ) => {
@@ -48,20 +65,21 @@ export default class SoundService {
       if (change.type === 'added') {
         if (!cached && data.storagePath) {
           this.cache.set(data.name.toLowerCase(), data);
-          // Does the file exist? if not download it
-          const localFilePath = path.join(this.soundsFolder, data.fileName);
+          this.downloadSound(data);
+          // // Does the file exist? if not download it
+          // const localFilePath = path.join(this.soundsFolder, data.fileName);
 
-          // check if file is on the local machine.
-          if (!fs.existsSync(localFilePath)) {
-            console.log(`Downloading ${data.fileName}`);
+          // // check if file is on the local machine.
+          // if (!fs.existsSync(localFilePath)) {
+          //   console.log(`Downloading ${data.fileName}`);
 
-            await this.fireStorage
-              .bucket()
-              .file(data.storagePath)
-              .download({ destination: localFilePath });
-          } else {
-            // console.log(`File ${data.fileName} already exists`);
-          }
+          //   await this.fireStorage
+          //     .bucket()
+          //     .file(data.storagePath)
+          //     .download({ destination: localFilePath });
+          // } else {
+          //   // console.log(`File ${data.fileName} already exists`);
+          // }
         }
       }
       if (change.type === 'removed') {
@@ -72,9 +90,13 @@ export default class SoundService {
       }
       if (change.type === 'modified') {
         console.log('modified: ', change.doc.data());
-        if (!cached) {
-          // Name changed, we need to delete the old entry and make a new one!
-          this.cache.sweep((sound) => sound.id === data.id); // Delete old data
+        if (!cached && data.storagePath) {
+          // check for Name change, we need to delete the old entry and make a new one!
+          const removed = this.cache.sweep((sound) => sound.id === data.id); // Delete old data
+          if (removed === 0) {
+            // we removed 0 entries, so this is a new sound. We need to download the new sound!
+            this.downloadSound(data);
+          }
         }
         this.cache.set(data.name.toLowerCase(), data);
       }
