@@ -116,6 +116,8 @@ const Sounds = () => {
         <thead>
           <tr>
             <th>Name</th>
+            <th>Date added</th>
+            <th>Added By</th>
             <th>Actions</th>
           </tr>
         </thead>

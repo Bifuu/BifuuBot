@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import Card from 'react-bootstrap/Card';
 
 import { storage, db } from '../services/firebase';
 
@@ -59,6 +58,8 @@ const SoundCard = (props) => {
         </button>
         {edit ? editField() : props.data.name}
       </td>
+      <td>{props.data.uploadDate.toDate().toDateString()}</td>
+      <td>{props.data.uploadedBy}</td>
       <td>
         <button
           onClick={() => {

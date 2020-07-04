@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { auth, functions } from '../services/firebase';
+import { auth } from '../services/firebase';
 import { UserContext } from '../providers/UserProvider';
 import Navbar from 'react-bootstrap/Navbar';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -13,7 +13,7 @@ const Nav = () => {
       return (
         <>
           <Navbar.Text>
-            <a onClick={() => auth.signOut()}>Sign Out</a>
+            <button onClick={() => auth.signOut()}>Sign Out</button>
           </Navbar.Text>
         </>
       );

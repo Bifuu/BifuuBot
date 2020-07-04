@@ -1,12 +1,10 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { auth, functions } from '../services/firebase';
+import { auth } from '../services/firebase';
 import queryString from 'query-string';
-import { UserContext } from '../providers/UserProvider';
 import { firebaseConfig } from '../config.json';
 
 const SignIn = (props) => {
-  const user = useContext(UserContext);
   const history = useHistory();
 
   useEffect(() => {
