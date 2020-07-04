@@ -36,7 +36,9 @@ const SoundCard = (props) => {
       const url = await storage.ref(props.data.storagePath).getDownloadURL();
       setAudio(new Audio(url));
     };
-    getAudioURL();
+    if (props.data.storagePath) {
+      getAudioURL();
+    }
   }, [props.data]);
 
   return (
@@ -68,7 +70,8 @@ const SoundCard = (props) => {
         <button
           onClick={() => {
             db.collection('sounds').doc(props.id).delete();
-            storage.ref(props.data.storagePath).delete();
+            if (props.data.storagePath)
+              storage.ref(props.data.storagePath).delete();
           }}
         >
           Delete

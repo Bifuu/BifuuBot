@@ -40,19 +40,14 @@ export const generateOGG = functions.storage
 
     // Get file name
     const fileName = path.basename(filePath);
-    const soundName = fileName.replace(/\.[^/.]+$/, '');
-
-    if (fileName.endsWith(`_output.ogg`)) {
-      // console.log(`Already converted audio`);
-      return null;
-    }
+    const soundID = fileName.replace(/\.[^/.]+$/, '');
 
     const bucket = gcs.bucket(fileBucket);
     const tempFilePath = path.join(os.tmpdir(), fileName);
 
-    const targetTempFileName = soundName + '.ogg';
-    const targetTempFilePath = path.join(os.tmpdir(), targetTempFileName);
-    const targetStorageFilePath = path.join('sounds', targetTempFileName);
+    const targetFileName = soundID + '.ogg';
+    const targetTempFilePath = path.join(os.tmpdir(), targetFileName);
+    const targetStorageFilePath = path.join('sounds', targetFileName);
 
     await bucket.file(filePath).download({ destination: tempFilePath });
     // console.log(`audio downloaded locally to ${tempFilePath}`);
@@ -79,20 +74,19 @@ export const generateOGG = functions.storage
     fs.unlinkSync(tempFilePath);
     fs.unlinkSync(targetTempFilePath);
 
-    await admin.firestore().collection(`sounds`).add({
-      name: soundName,
-      fileName: targetTempFileName,
+    await admin.firestore().collection(`sounds`).doc(soundID).update({
+      fileName: targetFileName,
       storagePath: targetStorageFilePath,
-      volume: 1,
+      uploadDate: Date.now(),
     });
 
-    // await admin.database().ref(`sounds/${soundName}`).set({
-    //   filename: targetTempFileName,
-    //   path: targetStorageFilePath,
+    // await admin.firestore().collection(`sounds`).add({
+    //   name: soundName,
+    //   fileName: targetTempFileName,
+    //   storagePath: targetStorageFilePath,
     //   volume: 1,
     // });
 
-    // console.log(`Temp files removed.`, targetTempFilePath);
     return;
   });
 

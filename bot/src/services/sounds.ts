@@ -46,7 +46,7 @@ export default class SoundService {
       };
       const cached = this.cache.get(data.name);
       if (change.type === 'added') {
-        if (!cached) {
+        if (!cached && data.storagePath) {
           this.cache.set(data.name.toLowerCase(), data);
           // Does the file exist? if not download it
           const localFilePath = path.join(this.soundsFolder, data.fileName);

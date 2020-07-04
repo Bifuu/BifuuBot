@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { upload } from '../helpers/storage';
+import { UserContext } from '../providers/UserProvider';
 import { db } from '../services/firebase';
 
 import Table from 'react-bootstrap/Table';
@@ -12,6 +13,7 @@ import SoundCard from '../components/SoundCard';
 const Sounds = () => {
   const [sounds, setSounds] = useState([]);
   const [uploading, setUploading] = useState(null);
+  const user = useContext(UserContext);
   const fileInput = React.createRef();
   const soundName = React.createRef();
 
@@ -24,27 +26,45 @@ const Sounds = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(event);
     const file = fileInput.current.files[0];
     const name = soundName.current.value;
     event.currentTarget.reset();
-    const uploadTask = upload(file, name);
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        // State changes
-        let progress = snapshot.bytesTransferred / snapshot.totalBytes;
-        setUploading(progress);
-      },
-      (error) => {
-        // Error happens
-        setUploading(null);
-      },
-      () => {
-        // Upload Completes
-        setUploading(null);
-      }
-    );
+    /*
+     await admin.firestore().collection(`sounds`).add({
+      name: soundName,
+      fileName: targetTempFileName,
+      storagePath: targetStorageFilePath,
+      volume: 1,
+    });
+    */
+    console.log(`${name} is uploading?`);
+    db.collection('sounds')
+      .add({
+        name: name,
+        volume: 1,
+        uploadedBy: user.username,
+      })
+      .then((doc) => {
+        console.log('UPLOAD TASK?!');
+        console.log(`id: ${doc.id}`);
+        const uploadTask = upload(file, doc.id);
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => {
+            // State changes
+            let progress = snapshot.bytesTransferred / snapshot.totalBytes;
+            setUploading(progress);
+          },
+          (error) => {
+            // Error happens
+            setUploading(null);
+          },
+          () => {
+            // Upload Completes
+            setUploading(null);
+          }
+        );
+      });
   };
 
   const showFormOrProgress = () => {
