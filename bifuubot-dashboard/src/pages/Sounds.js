@@ -7,12 +7,14 @@ import Table from 'react-bootstrap/Table';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
+import Alert from 'react-bootstrap/Alert';
 import bsCustomFileInput from 'bs-custom-file-input';
 import SoundCard from '../components/SoundCard';
 
 const Sounds = () => {
   const [sounds, setSounds] = useState([]);
   const [uploading, setUploading] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
   const user = useContext(UserContext);
   const fileInput = React.createRef();
   const soundName = React.createRef();
@@ -62,6 +64,7 @@ const Sounds = () => {
           () => {
             // Upload Completes
             setUploading(null);
+            setShowAlert(true);
           }
         );
       });
@@ -98,6 +101,17 @@ const Sounds = () => {
     }
   };
 
+  const uploadAlert = () => {
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 8000);
+    return (
+      <Alert variant="success" dismissible onClose={() => setShowAlert(false)}>
+        Sound has been uploaded. Give it some time to process on the back end!
+      </Alert>
+    );
+  };
+
   const renderListOfSounds = () => {
     let list = [];
     sounds.forEach((doc) => {
@@ -111,6 +125,7 @@ const Sounds = () => {
   return (
     <div>
       {showFormOrProgress()}
+      {showAlert ? uploadAlert() : null}
       <hr />
       <Table striped bordered hover>
         <thead>
