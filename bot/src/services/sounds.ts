@@ -108,6 +108,11 @@ export default class SoundService {
     return path.join(this.soundsFolder, this.cache.get(soundName).fileName);
   };
 
+  GetDefaultVolume = (soundName: string) => {
+    if (!this.SoundExists(soundName)) return 1;
+    return this.cache.get(soundName).volume;
+  };
+
   GetAvailableSounds = () => {
     return Array.from(this.cache.keys());
   };
@@ -116,7 +121,11 @@ export default class SoundService {
     return this.cache.has(soundName);
   };
 
-  PlaySound = async (soundName: string, message: Message, volume?: number) => {
+  PlaySound = async (
+    soundName: string,
+    message: Message,
+    volume: number = 1
+  ) => {
     const ytRegex: RegExp = /(?:https?:\/\/)?(?:www\.)?youtu\.?be(?:\.com)?\/?.*(?:watch|embed)?(?:.*v=|v\/|\/)(?<id>[\w-_]+)(?<time>(?:\?|&)t=\d+)?/;
     const isYTUrl = ytRegex.exec(soundName);
 
@@ -148,8 +157,10 @@ export default class SoundService {
 
     const voiceConnection = await message.member.voice.channel.join();
 
+    const playVolume = 0.5 * volume * this.GetDefaultVolume(soundName);
+
     const dispatcher = voiceConnection.play(audioStream, {
-      volume: 0.5 * volume,
+      volume: playVolume,
       type,
     });
 
