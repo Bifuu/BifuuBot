@@ -166,7 +166,11 @@ export default class SoundService {
 
     dispatcher.on('start', async () => {
       await message.delete();
-      console.log(`${soundName} has started playing.`);
+      console.log(
+        `${soundName} has started playing at volume ${playVolume} (default multiplier: ${this.GetDefaultVolume(
+          soundName
+        )})`
+      );
     });
 
     dispatcher.on('finish', () => {
