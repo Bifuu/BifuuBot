@@ -14,12 +14,20 @@ const SoundCard = (props) => {
   const updateName = async () => {
     // if (editNameField.current.value === props.data.name) return setEdit(false);
 
-    await db.collection('sounds').doc(props.id).update({
-      name: editNameField.current.value,
-      volume,
-    });
+    await db
+      .collection('sounds')
+      .doc(props.id)
+      .update({
+        name: editNameField.current.value,
+        volume: volume / 100,
+      });
 
     setEdit(false);
+  };
+
+  const cancelEdit = () => {
+    setEdit(false);
+    setVolume(props.data.volume * 100);
   };
 
   const editField = () => {
@@ -34,9 +42,8 @@ const SoundCard = (props) => {
           value={volume}
           onChange={(e) => setVolume(e.target.value)}
         />
-        {volume}
-        <button onClick={updateName}>Submit</button>
-        <button onClick={() => setEdit(false)}>Cancel</button>
+        {volume}%<button onClick={updateName}>Submit</button>
+        <button onClick={cancelEdit}>Cancel</button>
       </div>
     );
   };
@@ -49,6 +56,7 @@ const SoundCard = (props) => {
     if (props.data.storagePath) {
       getAudioURL();
     }
+    setVolume(props.data.volume * 100);
   }, [props.data]);
 
   return (
