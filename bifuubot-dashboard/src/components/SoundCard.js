@@ -7,14 +7,16 @@ const SoundCard = (props) => {
   const [audio, setAudio] = useState(new Audio());
   const [playing, setPlaying] = useState(false);
   const [edit, setEdit] = useState(false);
+  const [volume, setVolume] = useState(100);
 
   const editNameField = React.createRef();
 
   const updateName = async () => {
-    if (editNameField.current.value === props.data.name) return setEdit(false);
+    // if (editNameField.current.value === props.data.name) return setEdit(false);
 
     await db.collection('sounds').doc(props.id).update({
       name: editNameField.current.value,
+      volume,
     });
 
     setEdit(false);
@@ -24,6 +26,15 @@ const SoundCard = (props) => {
     return (
       <div>
         <input type="text" ref={editNameField} defaultValue={props.data.name} />
+        Default Volume:
+        <input
+          type="range"
+          min={1}
+          max={100}
+          value={volume}
+          onChange={(e) => setVolume(e.target.value)}
+        />
+        {volume}
         <button onClick={updateName}>Submit</button>
         <button onClick={() => setEdit(false)}>Cancel</button>
       </div>
