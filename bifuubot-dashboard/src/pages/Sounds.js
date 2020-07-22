@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { upload } from '../helpers/storage';
 import { UserContext } from '../providers/UserProvider';
-import { db } from '../services/firebase';
+import { db, storage } from '../services/firebase';
 
 import Table from 'react-bootstrap/Table';
 import Form from 'react-bootstrap/Form';
@@ -10,17 +10,20 @@ import Col from 'react-bootstrap/Col';
 import Alert from 'react-bootstrap/Alert';
 import bsCustomFileInput from 'bs-custom-file-input';
 import SoundCard from '../components/SoundCard';
+import DeleteSoundModal from '../components/DeleteSoundModal';
 
 const Sounds = () => {
   const [sounds, setSounds] = useState([]);
   const [uploading, setUploading] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
+  const [showDelete, setShowDelete] = useState(null);
   const user = useContext(UserContext);
   const fileInput = React.createRef();
   const soundName = React.createRef();
 
   useEffect(() => {
     db.collection('sounds').onSnapshot((snapshot) => {
+      console.log('SNAPSHOT GET');
       setSounds(snapshot);
     });
     bsCustomFileInput.init();
@@ -70,6 +73,24 @@ const Sounds = () => {
       });
   };
 
+  const onDeleteClick = (id, data) => {
+    console.log(`handle delete of id ${id}`);
+    console.log(data);
+    const deleteData = { id, ...data };
+    setShowDelete(deleteData);
+  };
+
+  const handleDelete = (data) => {
+    console.log(`Delete id: ${data.id}`);
+    db.collection('sounds').doc(data.id).delete();
+    if (data.storagePath) storage.ref(data.storagePath).delete();
+    setShowDelete(null);
+  };
+
+  const closeDelete = () => {
+    setShowDelete(null);
+  };
+
   const showFormOrProgress = () => {
     if (uploading) {
       return <div>{`Uploading: ${uploading * 100}%`}</div>;
@@ -115,7 +136,14 @@ const Sounds = () => {
   const renderListOfSounds = () => {
     let list = [];
     sounds.forEach((doc) => {
-      const sound = <SoundCard data={doc.data()} key={doc.id} id={doc.id} />;
+      const sound = (
+        <SoundCard
+          data={doc.data()}
+          key={doc.id}
+          id={doc.id}
+          delete={onDeleteClick}
+        />
+      );
       list.push(sound);
     });
 
@@ -124,6 +152,12 @@ const Sounds = () => {
 
   return (
     <div>
+      <DeleteSoundModal
+        show={showDelete !== null}
+        soundData={showDelete}
+        callback={handleDelete}
+        close={closeDelete}
+      />
       {showFormOrProgress()}
       {showAlert ? uploadAlert() : null}
       <hr />

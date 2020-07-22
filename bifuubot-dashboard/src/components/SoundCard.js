@@ -89,9 +89,7 @@ const SoundCard = (props) => {
         </button>
         <button
           onClick={() => {
-            db.collection('sounds').doc(props.id).delete();
-            if (props.data.storagePath)
-              storage.ref(props.data.storagePath).delete();
+            props.delete(props.id, props.data);
           }}
         >
           Delete
