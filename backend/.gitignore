@@ -1,0 +1,8 @@
+obj/
+bin/
+*.exe
+*.dll
+*.db
+appsettings.json
+API/wwwroot/Sounds
+API/wwwroot/Upload
