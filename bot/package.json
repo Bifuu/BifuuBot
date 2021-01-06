@@ -17,7 +17,7 @@
     "@types/keyv": "^3.1.1",
     "@types/multer": "^1.4.3",
     "@types/node": "^13.13.1",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "discord-ytdl-core": "^3.0.0",
     "discord.js": "^12.2.0",
     "express": "^4.17.1",
